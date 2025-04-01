@@ -1,5 +1,7 @@
 package QuanLyTracNghiem.GUI;
 
+import QuanLyTracNghiem.DTO.UserModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -19,8 +21,10 @@ public class UIMainRoleAdmin extends JFrame {
     private final Color logoutHoverColor = new Color(200, 35, 51); // Màu đỏ đậm khi hover
     private JPanel panel_temp;
     private CardLayout main_cardlayout;
+    private UserModel login_user;
 
-    public UIMainRoleAdmin() {
+    public UIMainRoleAdmin(UserModel login_user) {
+        this.login_user=login_user;
         addControls();
         addEvents();
     }
@@ -31,6 +35,8 @@ public class UIMainRoleAdmin extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        // Mở cửa sổ ở chế độ toàn màn hình
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
     private void addControls() {
         setLayout(new BorderLayout());
@@ -51,7 +57,7 @@ public class UIMainRoleAdmin extends JFrame {
         panelLeft.setBackground(backgroundColor);
 
         // Thêm các nút điều hướng
-        String[] buttonLabels = {"Quản lý", "Báo cáo", "Thông tin cá nhân", "Trợ giúp","Tạo Câu Hỏi"};
+        String[] buttonLabels = {"Quản lý", "Thông tin cá nhân", "Trợ giúp","Tạo Câu Hỏi"};
         navigationButtons = new JButton[buttonLabels.length];
         
         for (int i = 0; i < buttonLabels.length; i++) {
@@ -91,9 +97,9 @@ public class UIMainRoleAdmin extends JFrame {
         panelMain = new JPanel();
         main_cardlayout=new CardLayout();
         panelMain.setLayout(main_cardlayout);
-        ThongTinUI thongtin_ui_panel=new ThongTinUI();
+        ThongTinUI thongtin_ui_panel=new ThongTinUI(login_user);
         TrogiupUI trogiupUI=new TrogiupUI();
-        UI_Quanli ui_quanli=new UI_Quanli(this);
+        UI_Quanli ui_quanli=new UI_Quanli(this, login_user);
         panelMain.add(ui_quanli,"1");
         panelMain.add(thongtin_ui_panel,"2");
         panelMain.add(trogiupUI,"3");
@@ -156,6 +162,7 @@ public class UIMainRoleAdmin extends JFrame {
                         case 3: // "Trợ giúp"
                             main_cardlayout.show(panelMain, "3");
                             break;
+
                         default:
                             System.out.println("Chức năng chưa được thiết lập.");
                     }
@@ -163,31 +170,11 @@ public class UIMainRoleAdmin extends JFrame {
             });
         }
 
-        navigationButtons[4].addMouseListener(new MouseAdapter() {
+        navigationButtons[3].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Chọn file Excel");
-                int result = fileChooser.showOpenDialog(UIMainRoleAdmin.this);
-
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    // Lấy thông tin file
-                    java.io.File file = fileChooser.getSelectedFile();
-                    String fileName = file.getName();
-                    long fileSize = file.length(); // Kích thước file (bytes)
-
-                    // Hiển thị thông báo
-                    JOptionPane.showMessageDialog(
-                            UIMainRoleAdmin.this,
-                            "Bạn đã chọn file: " + fileName + " có kích thước: " + fileSize + " bytes",
-                            "Thông báo",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-
-                    // Gọi phương thức mở dialog chứa UI_DetailList_Ques_inTest=>Nớ thêm phương thức xử lí file rồi mới gọi showDetailListDialog nha
-//                    showDetailListDialog();
-                }
-
+                QuestionInputDialog questionInputDialog=new QuestionInputDialog(UIMainRoleAdmin.this);
+                questionInputDialog.setVisible(true);
             }
         });
 
@@ -226,24 +213,6 @@ public class UIMainRoleAdmin extends JFrame {
         }
     }
 
-    private void showDetailListDialog() {
-        JDialog detailDialog = new JDialog(this, "Danh Sách Câu Hỏi", true);
-        detailDialog.setSize(1500, 900);
-        detailDialog.setLocationRelativeTo(this);
 
-        // Tạo panel chứa danh sách câu hỏi
-        UI_DetailList_Ques_inTest detailPanel = new UI_DetailList_Ques_inTest();
-        detailDialog.add(detailPanel);
-
-        detailDialog.setVisible(true);
-    }
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UIMainRoleAdmin ui = new UIMainRoleAdmin();
-          ui.showUI();
-        });
-    }
 
 }

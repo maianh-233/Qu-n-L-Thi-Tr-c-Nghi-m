@@ -8,7 +8,7 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
         // Đặt Look and Feel trước khi khởi tạo giao diện
-        changLNF("Nimbus");
+
 
         new MyConnect();
         DangNhapGUI login = new DangNhapGUI();

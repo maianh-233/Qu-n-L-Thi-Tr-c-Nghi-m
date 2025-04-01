@@ -18,6 +18,10 @@ public class AnswerModel {
         this.question_id = question_id;
     }
 
+    public AnswerModel() {
+
+    }
+
     // Getters and Setters
     public String getAnswer_content() {
         return answer_content;

@@ -3,8 +3,8 @@ package QuanLyTracNghiem.DTO;
 import java.time.LocalDateTime;
 
 public class ResultModel {
-    private Float diem;
-    private Float raw_score;
+    private Integer diem;
+    private Integer raw_score;
     private Integer status;
     private Integer exam_id;
     private Integer soCauDung;
@@ -13,7 +13,7 @@ public class ResultModel {
     private String user_id;
 
     // Constructor đầy đủ
-    public ResultModel(Float diem, Float raw_score, Integer status, Integer exam_id,
+    public ResultModel(Integer diem, Integer raw_score, Integer status, Integer exam_id,
                        Integer soCauDung, Integer soCauSai, LocalDateTime thoiGianNop, String user_id) {
         this.diem = diem;
         this.raw_score = raw_score;
@@ -25,20 +25,24 @@ public class ResultModel {
         this.user_id = user_id;
     }
 
+    public ResultModel() {
+
+    }
+
     // Getters and Setters
-    public Float getDiem() {
+    public Integer getDiem() {
         return diem;
     }
 
-    public void setDiem(Float diem) {
+    public void setDiem(Integer diem) {
         this.diem = diem;
     }
 
-    public Float getRaw_score() {
+    public Integer getRaw_score() {
         return raw_score;
     }
 
-    public void setRaw_score(Float raw_score) {
+    public void setRaw_score(Integer raw_score) {
         this.raw_score = raw_score;
     }
 

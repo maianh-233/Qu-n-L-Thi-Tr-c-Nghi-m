@@ -1,8 +1,19 @@
 package QuanLyTracNghiem.GUI;
 
-class ThongTinUI extends javax.swing.JPanel {
+import QuanLyTracNghiem.BUS.InputValidator;
+import QuanLyTracNghiem.BUS.UserBUS;
+import QuanLyTracNghiem.DTO.UserModel;
 
-    public ThongTinUI() {
+import javax.swing.*;
+
+class ThongTinUI extends javax.swing.JPanel {
+    private UserModel login_user;
+    private UserBUS userBUS;
+    private InputValidator inputValidator;
+
+    public ThongTinUI(UserModel login_user) {
+        userBUS=new UserBUS();
+        this.login_user=login_user;
         initComponents();
     }
 
@@ -140,26 +151,12 @@ class ThongTinUI extends javax.swing.JPanel {
         full_name_label.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         full_name_label.setText("Full name :");
 
-        txt_phone.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_phoneActionPerformed(evt);
-            }
-        });
-
-        txt_gmail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_gmailActionPerformed(evt);
-            }
-        });
-
-        txt_fullname.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_fullnameActionPerformed(evt);
-            }
-        });
 
         uer_id.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        uer_id.setText("maianh1");
+        uer_id.setText(login_user.getUser_id());
+        txt_cpass.setText("");
+        txt_newpass.setText("");
+
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -223,24 +220,90 @@ class ThongTinUI extends javax.swing.JPanel {
     }// </editor-fold>
 
     private void btn_updateActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
+        String fullname=txt_fullname.getText();
+        String phone=txt_phone.getText();
+        String email=txt_gmail.getText();
+        if(fullname.isEmpty()&&phone.isEmpty()&&email.isEmpty()){
+            JOptionPane.showMessageDialog(null,
+                    "Bạn chưa nhập thông tin gì hết ",
+                    "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if(phone.isEmpty()==false){
+            if (!inputValidator.isValidVietnamesePhoneNumber(phone)) {
+                JOptionPane.showMessageDialog(null,
+                        "Vui lòng nhập đúng số điện thoại Việt Nam!",
+                        "Cảnh báo",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
 
-    private void txt_gmailActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
+            }
+        }
 
-    private void txt_fullnameActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
-    }
+        if ((email.isEmpty()==false)){
+            if (!inputValidator.isValidEmail(email)) {
+                JOptionPane.showMessageDialog(null,
+                        "Vui lòng nhập đúng định dạng email!",
+                        "Cảnh báo",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
 
-    private void txt_phoneActionPerformed(java.awt.event.ActionEvent evt) {
+
+
+
+        if(userBUS.editUser(email,fullname,"", phone,login_user.getUser_id())==true){
+            txt_fullname.setText("");
+            txt_phone.setText("");
+            txt_gmail.setText("");
+            txt_cpass.setText("");
+            txt_newpass.setText("");
+            JOptionPane.showMessageDialog(null, "Bạn đã sửa thông tin thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+
         // TODO add your handling code here:
     }
 
     private void btn_changepassActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        // Lấy dữ liệu từ các ô nhập mật khẩu
+        String newPass = new String(txt_newpass.getPassword());
+        String confirmPass = new String(txt_cpass.getPassword());
+
+        // Kiểm tra nếu ô nhập bị bỏ trống
+        if (newPass.isEmpty() || confirmPass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return; // Dừng hàm nếu chưa nhập đủ
+        }
+        if (!inputValidator.isValidPassword(newPass)) {
+            JOptionPane.showMessageDialog(null,
+                    "Mật khẩu phải chứa ít nhất:\n- 1 Chữ cái\n- 1 Số\n- 1 Ký tự đặc biệt",
+                    "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Kiểm tra hai mật khẩu có trùng khớp không
+        if (!newPass.equals(confirmPass)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu xác nhận không trùng khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(userBUS.editUser("","",newPass, "",login_user.getUser_id())==true){
+            txt_fullname.setText("");
+            txt_phone.setText("");
+            txt_gmail.setText("");
+            txt_cpass.setText("");
+            txt_newpass.setText("");
+            // Nếu hợp lệ, tiến hành đổi mật khẩu (có thể thêm code cập nhật database tại đây)
+            JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+
     }
+
 
 
     // Variables declaration - do not modify

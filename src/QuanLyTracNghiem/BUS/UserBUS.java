@@ -19,8 +19,8 @@ private UserDAO userdao=new UserDAO();
         return userdao.generateUserId(user_name);
     }
 
-    public boolean editUser(String email, String password, String phone, String user_id){
-        return userdao.editUser(email, password, phone, user_id);
+    public boolean editUser(String email,String fullname, String password, String phone, String user_id){
+        return userdao.editUser(email, fullname,password, phone, user_id);
     }
 
     public UserModel getInfo (String user_id){
@@ -29,5 +29,9 @@ private UserDAO userdao=new UserDAO();
 
     public ArrayList<UserModel> getListUserDoExam(int exam_id){
         return userdao.getListUserDoExam(exam_id);
+    }
+
+    public ArrayList<UserModel> getExistingUsersFromDB (ArrayList<UserModel> list_user){
+        return userdao.getExistingUsersFromDB(list_user);
     }
 }

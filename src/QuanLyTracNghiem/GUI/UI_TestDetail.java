@@ -1,25 +1,36 @@
 package QuanLyTracNghiem.GUI;
 
 
+import QuanLyTracNghiem.BUS.ExamBUS;
+import QuanLyTracNghiem.DTO.ExamModel;
+
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 
  class UI_TestDetail extends JDialog {
     private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private ExamBUS examBUS=new ExamBUS();
+    private ArrayList <ExamModel> list_exam;
 
-    public UI_TestDetail (JFrame parent) {
+    private JPanel mainPanel;
+    private String test_id;
+    private Integer have_PanelButton;
+
+    public UI_TestDetail (JFrame parent, String test_id, int have_PanelButton) {
 
         super(parent, "Quản lý thông tin bài test", true);
-        setSize(1500, 1000);
+        setSize(1500 ,1000);
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
+        this.test_id=test_id;
+        this.have_PanelButton=have_PanelButton;
 
 
 
         // Màu chủ đạo
         Color pastelBlue = new Color(173, 216, 230); // Xanh pastel
-        Color white = Color.WHITE;
+        Color white = Color.black;
         Font font = new Font("Arial", Font.PLAIN, 18);
 
         // Header - Thanh điều hướng
@@ -40,9 +51,10 @@ import javax.swing.*;
         mainPanel = new JPanel(cardLayout);
         mainPanel.setBackground(white);
 
-        DetailList_User_doTest list_user_doTest=new DetailList_User_doTest();
-        UI_DetailList_Ques_inTest ui_detailList_ques_inTest=new UI_DetailList_Ques_inTest();
-        UI_DetailInformationTest ui_detailInformationTest=new UI_DetailInformationTest();
+        list_exam=examBUS.selectByTestID(Integer.parseInt(test_id));
+        DetailList_User_doTest list_user_doTest=new DetailList_User_doTest(list_exam,have_PanelButton);
+        UI_DetailList_Ques_inTest ui_detailList_ques_inTest=new UI_DetailList_Ques_inTest(list_exam,have_PanelButton);
+        UI_DetailInformationTest ui_detailInformationTest=new UI_DetailInformationTest(test_id, have_PanelButton);
         JPanel studentPanel = createPanel("Thông tin", font, white);
 
         mainPanel.add(ui_detailInformationTest, "Thông tin");
@@ -83,20 +95,6 @@ import javax.swing.*;
         return panel;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 300);
-            frame.setLocationRelativeTo(null);
 
-            JButton openDialogButton = new JButton("Mở Dialog");
-            openDialogButton.addActionListener(e -> new UI_TestDetail(frame).setVisible(true));
-
-            frame.setLayout(new FlowLayout());
-            frame.add(openDialogButton);
-            frame.setVisible(true);
-        });
-    }
 }
 

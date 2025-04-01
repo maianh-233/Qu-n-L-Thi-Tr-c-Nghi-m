@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TestDAO {
     //Thêm bài test vào csdl=>không cần tham số test_id vì cột tăng tự động
-    public boolean addTest(int create_by, int luotlambai, LocalDateTime ngaybd_thi, int socaude,
+    public boolean addTest(String create_by, int luotlambai, LocalDateTime ngaybd_thi, int socaude,
                            int socauhoi,int socaukho, int socauthuong, int solgmade, int test_id,
                            String test_name,int test_status ,int tgianlambai) {
         LocalDateTime create_at = LocalDateTime.now();
@@ -42,67 +42,6 @@ public class TestDAO {
         return false;
     }
 
-    //Tìm kiếm Test
-    public ArrayList<TestModel> findTest( Integer create_by, LocalDateTime ngaybd_thi, LocalDateTime create_at, String test_id, String test_name) {
-        ArrayList<TestModel> test_list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM test WHERE 1=1");
-        List<Object> values = new ArrayList<>();
-
-        // Thêm điều kiện vào SQL nếu có giá trị
-        if (create_by != null ) {
-            sql.append(" AND create_by = ?");
-            values.add(create_by);
-        }
-        if (ngaybd_thi != null) {
-            sql.append(" AND ngaybd_thi = ?");
-            values.add(Timestamp.valueOf(ngaybd_thi));
-        }
-        if (create_at != null) {
-            sql.append(" AND create_at = ?");
-            values.add(Timestamp.valueOf(create_at));
-        }
-        if (test_id != null && !test_id.trim().isEmpty()) {
-            sql.append(" AND test_id = ?");
-            values.add(test_id);
-        }
-        if (test_name != null && !test_name.trim().isEmpty()) {
-            sql.append(" AND test_name = ?");
-            values.add(test_name);
-        }
-
-        try (PreparedStatement pre = MyConnect.conn.prepareStatement(sql.toString())) {
-            // Gán giá trị vào PreparedStatement
-            for (int i = 0; i < values.size(); i++) {
-                pre.setObject(i + 1, values.get(i));
-            }
-
-            // Thực thi truy vấn
-            try (ResultSet rs = pre.executeQuery()) {
-                while (rs.next()) {
-                    TestModel test = new TestModel();
-                    test.setTest_id(rs.getInt("test_id"));
-                    test.setTest_name(rs.getString("test_name"));
-                    test.setCreate_by(rs.getString("create_by")); // Sửa lỗi này
-                    test.setLuotlambai(rs.getInt("luotlambai"));
-                    test.setSocaude(rs.getInt("socaude"));
-                    test.setSocauhoi(rs.getInt("socauhoi"));
-                    test.setSocaukho(rs.getInt("socaukho"));
-                    test.setSocauthuong(rs.getInt("socauthuong"));
-                    test.setSolgmade(rs.getInt("solgmade"));
-                    test.setTest_status(rs.getInt("test_status"));
-                    test.setTgianlambai(rs.getInt("tgianlambai"));
-                    test.setNgbd_thi(rs.getTimestamp("ngaybd_thi") != null ? rs.getTimestamp("ngaybd_thi").toLocalDateTime() : null);
-                    test.setCreate_at(rs.getTimestamp("create_at") != null ? rs.getTimestamp("create_at").toLocalDateTime() : null);
-                    test_list.add(test);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Lỗi xảy ra khi tìm kiếm bài kiểm tra: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return test_list;
-    }
 
     //Sửa bài test (luotlanbai, ngaybd_thi,test_name, tgianlambai)
     public boolean editTest( LocalDateTime ngaybd_thi, String test_name, Integer tgianlambai, int test_id) {
@@ -155,13 +94,13 @@ public class TestDAO {
 
             if (rs.next()) {
                 int maxTestId = rs.getInt("max_test_id");
-                return rs.wasNull() ? null : maxTestId; // Kiểm tra nếu giá trị NULL trong DB
+                return rs.wasNull() ? 0: maxTestId; // Kiểm tra nếu giá trị NULL trong DB
             }
         } catch (SQLException e) {
             System.out.println("Lỗi khi lấy tạo test_id lớn nhất: " + e.getMessage());
             e.printStackTrace();
         }
-        return null; // Trả về null nếu không có dữ liệu hoặc có lỗi
+        return 0;// Trả về null nếu không có dữ liệu hoặc có lỗi
     }
 
 
@@ -234,6 +173,36 @@ public class TestDAO {
 
         return test_list;
     }
+    public TestModel findTestById(int test_id) {
+        String sql = "SELECT * FROM test WHERE test_id = ?";
+        try (PreparedStatement pre = MyConnect.conn.prepareStatement(sql)) {
+            pre.setInt(1, test_id);
+            try (ResultSet rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    TestModel test = new TestModel();
+                    test.setTest_id(rs.getInt("test_id"));
+                    test.setTest_name(rs.getString("test_name"));
+                    test.setCreate_by(rs.getString("create_by"));
+                    test.setLuotlambai(rs.getInt("luotlambai"));
+                    test.setSocaude(rs.getInt("socaude"));
+                    test.setSocauhoi(rs.getInt("socauhoi"));
+                    test.setSocaukho(rs.getInt("socaukho"));
+                    test.setSocauthuong(rs.getInt("socauthuong"));
+                    test.setSolgmade(rs.getInt("solgmade"));
+                    test.setTest_status(rs.getInt("test_status"));
+                    test.setTgianlambai(rs.getInt("tgianlambai"));
+                    test.setNgbd_thi(rs.getTimestamp("ngaybd_thi") != null ? rs.getTimestamp("ngaybd_thi").toLocalDateTime() : null);
+                    test.setCreate_at(rs.getTimestamp("create_at") != null ? rs.getTimestamp("create_at").toLocalDateTime() : null);
+                    return test;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi xảy ra khi tìm bài kiểm tra theo test_id: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Trả về null nếu không tìm thấy bài kiểm tra
+    }
+
 
 
 }

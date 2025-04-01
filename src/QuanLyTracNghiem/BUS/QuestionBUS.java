@@ -12,7 +12,9 @@ import java.util.List;
 
 public class QuestionBUS {
     private QuestionDAO questiondao=new QuestionDAO();
-
+    public Integer finMaxQuestion_Id(){
+        return questiondao.finMaxQuestion_Id();
+    }
     public boolean addQuestion(String question_content, int question_level, String question_picture, int question_status, int topic_id, int question_id){
         return questiondao.addQuestion( question_content, question_level, question_picture, question_status,  topic_id, question_id);
     }
@@ -31,5 +33,9 @@ public class QuestionBUS {
 
     public ArrayList<QuestionModel> getListQuestionInExam(int exam_id){
         return questiondao.getListQuestionInExam(exam_id);
+    }
+
+    public void insertListQuestionToDB(ArrayList<QuestionModel> list){
+        questiondao.insertListQuestionToDB(list);
     }
 }

@@ -99,19 +99,26 @@ public class UserDAO {
     }
 
     // Hàm sửa thông tin user
-    public boolean editUser(String email, String password, String phone, String user_id) {
+    public boolean editUser(String email, String fullname, String password, String phone, String user_id) {
         StringBuilder sql = new StringBuilder("UPDATE user SET ");
         List<String> fields = new ArrayList<>();
         List<Object> values = new ArrayList<>();
+
+        if (fullname != null && !fullname.trim().isEmpty()) {
+            fields.add("fullname = ?");
+            values.add(fullname);
+        }
 
         if (email != null && !email.trim().isEmpty()) {
             fields.add("email = ?");
             values.add(email);
         }
+
         if (phone != null && !phone.trim().isEmpty()) {
             fields.add("phone = ?");
             values.add(phone);
         }
+
         if (password != null && !password.trim().isEmpty()) {
             fields.add("password = ?");
             values.add(hashPassword(password));
@@ -129,13 +136,14 @@ public class UserDAO {
             for (int i = 0; i < values.size(); i++) {
                 pre.setObject(i + 1, values.get(i));
             }
-            return pre.executeUpdate() > 0;
+            return pre.executeUpdate() > 0; // Lệnh return hợp lệ
         } catch (SQLException e) {
             System.out.println("Lỗi xảy ra khi sửa user trong CSDL: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
     }
+
 
     // Hàm lấy thông tin user theo user_id
     public UserModel getInfo(String user_id) {
@@ -184,5 +192,39 @@ public class UserDAO {
         }
         return userList;
     }
+
+    //Kiểm tra list user có trong hệ thông không
+    public ArrayList<UserModel> getExistingUsersFromDB (ArrayList<UserModel> list_user){
+        ArrayList<UserModel>existingUsers = new ArrayList<>();
+
+        // Tạo chuỗi dấu hỏi tương ứng với số lượng user để binding dữ liệu
+        String placeholders = String.join(",", list_user.stream().map(u -> "?").toList());
+        String sql = "SELECT * FROM user WHERE user_id IN (" + placeholders + ")";
+        try (PreparedStatement stmt = MyConnect.conn.prepareStatement(sql)) {
+
+            // Gán giá trị vào dấu hỏi (?)
+            for (int i = 0; i < list_user.size(); i++) {
+                stmt.setString(i + 1, list_user.get(i).getUser_id());
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                UserModel user = new UserModel();
+                user.setUser_id(rs.getString("user_id"));
+                user.setFullname(rs.getString("fullname"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setIsAdmin(rs.getInt("isAdmin"));
+                existingUsers.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return existingUsers;
+    }
+
 
 }

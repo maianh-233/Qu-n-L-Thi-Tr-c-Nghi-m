@@ -10,7 +10,7 @@ import QuanLyTracNghiem.DTO.TopicModel;
 
 public class TopicDAO {
     //Lây tất cả các topic
-    public List<TopicModel> selectAll() {
+    public ArrayList<TopicModel> selectAll() {
         var list = new ArrayList<TopicModel>();
         var query = "SELECT * FROM topic";
         try (var statement = MyConnect.conn.createStatement()) {
@@ -77,13 +77,13 @@ public class TopicDAO {
 
             if (rs.next()) {
                 int maxTestId = rs.getInt("max_topic_id");
-                return rs.wasNull() ? null : maxTestId; // Kiểm tra nếu giá trị NULL trong DB
+                return rs.wasNull() ? 0 : maxTestId; // Kiểm tra nếu giá trị NULL trong DB
             }
         } catch (SQLException e) {
             System.out.println("Lỗi khi lấy tạo topic_id lớn nhất: " + e.getMessage());
             e.printStackTrace();
         }
-        return null; // Trả về null nếu không có dữ liệu hoặc có lỗi
+        return 0; // Trả về null nếu không có dữ liệu hoặc có lỗi
     }
 
 

@@ -1,5 +1,7 @@
 package QuanLyTracNghiem.GUI;
 
+import QuanLyTracNghiem.DTO.UserModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,6 +15,7 @@ public class UIMainRoleThiSinh extends JFrame {
 
     private JButton btn_dangxuat;
     private ThongTinUI thongTinUI;
+    private UserModel login_user;
 
     public void showUI(){
         // Thiết lập JFrame
@@ -22,7 +25,8 @@ public class UIMainRoleThiSinh extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
-    public UIMainRoleThiSinh() {
+    public UIMainRoleThiSinh(UserModel login_user) {
+        this.login_user=login_user;
         // Thêm các thành phần giao diện
         addControls();
         addEvents();
@@ -90,7 +94,7 @@ public class UIMainRoleThiSinh extends JFrame {
         cardLayout = new CardLayout();
         centerPanel = new JPanel(cardLayout);
 
-        thongTinUI=new ThongTinUI();
+        thongTinUI=new ThongTinUI(login_user);
 
 
 
@@ -126,7 +130,7 @@ public class UIMainRoleThiSinh extends JFrame {
         btn_dotest.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UI_FormLoginDoTest loginDialog = new UI_FormLoginDoTest(UIMainRoleThiSinh.this);
+                UI_FormLoginDoTest loginDialog = new UI_FormLoginDoTest(UIMainRoleThiSinh.this,login_user);
                 loginDialog.setVisible(true);
             }
         });

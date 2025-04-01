@@ -1,18 +1,65 @@
 package QuanLyTracNghiem.GUI;
 
+import QuanLyTracNghiem.BUS.TestBUS;
+import QuanLyTracNghiem.DTO.TestModel;
+import QuanLyTracNghiem.DTO.UserModel;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.util.ArrayList;
 
 class UI_ListTest extends JPanel {
+    //test đang được chọn
+    private String testId_selected;
+    private Integer have_PanelButton;
     private JFrame mainframe;
     private JButton detailButton;
+    private  JTable pastTestTable,upcomingTestTable;
+    private UserModel login_user;
 
-    public UI_ListTest(JFrame mainframe) {
+    private TestBUS testBUS; // Giả sử bạn có lớp BUS tên TestBUS
+
+    public UI_ListTest(JFrame mainframe,UserModel login_user) {
         this.mainframe = mainframe;
+        this.login_user=login_user;
+        this.testBUS = new TestBUS(); // Khởi tạo BUS
         addControls();
+        loadPastTests(login_user.getUser_id()); // Thay thế "creator_id" bằng giá trị thực tế
+        loadUpcomingTests(login_user.getUser_id());
+    }
+    public void loadPastTests(String creatorId) {
+        DefaultTableModel model = (DefaultTableModel) pastTestTable.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        ArrayList<TestModel> pastTests = testBUS.getPastTestsByCreator(creatorId);
+        for (TestModel test : pastTests) {
+            model.addRow(new Object[]{
+                    test.getTest_id(),
+                    test.getCreate_at(),
+                    test.getTest_name(),
+                    test.getNgbd_thi(),
+                    test.getTgianlambai()
+            });
+        }
+    }
+
+    public void loadUpcomingTests(String creatorId) {
+        DefaultTableModel model = (DefaultTableModel) upcomingTestTable.getModel();
+        model.setRowCount(0); // Xóa dữ liệu cũ
+
+        ArrayList<TestModel> upcomingTests = testBUS.getUpcomingTestsByCreator(creatorId);
+        for (TestModel test : upcomingTests) {
+            model.addRow(new Object[]{
+                    test.getTest_id(),
+                    test.getCreate_at(),
+                    test.getTest_name(),
+                    test.getNgbd_thi(),
+                    test.getTgianlambai()
+            });
+        }
     }
 
     public void addControls() {
@@ -23,8 +70,9 @@ class UI_ListTest extends JPanel {
 
         String[] columnNames = {"test_id", "create_at", "test_name", "ngaybd_thi", "tgianlambai"};
 
-        JTable pastTestTable = createStyledTable(columnNames);
-        JTable upcomingTestTable = createStyledTable(columnNames);
+        pastTestTable = createStyledTable(columnNames);
+        upcomingTestTable = createStyledTable(columnNames);
+
 
         JScrollPane pastScroll = new JScrollPane(pastTestTable);
         JScrollPane upcomingScroll = new JScrollPane(upcomingTestTable);
@@ -51,8 +99,41 @@ class UI_ListTest extends JPanel {
         JPanel footerPanel = new JPanel();
         detailButton = new JButton("Xem Chi Tiết");
         detailButton.setPreferredSize(new Dimension(200, 50));
-        detailButton.addActionListener(e -> new UI_TestDetail(mainframe).setVisible(true)); // Sửa lỗi
+
         footerPanel.add(detailButton);
+
+        JButton reloadButton = new JButton("Tải lại");
+        reloadButton.setPreferredSize(new Dimension(200, 50));
+        reloadButton.addActionListener(e -> {
+            loadPastTests(login_user.getUser_id());
+            loadUpcomingTests(login_user.getUser_id());
+        });
+        footerPanel.add(reloadButton);
+
+        pastTestTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && pastTestTable.getSelectedRow() != -1) {
+                int selectedRow = pastTestTable.getSelectedRow();
+                testId_selected = pastTestTable.getValueAt(selectedRow, 0).toString();
+                have_PanelButton=0;
+                System.out.println("Test ID (Past): " + testId_selected);
+            }
+        });
+
+        upcomingTestTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && upcomingTestTable.getSelectedRow() != -1) {
+                int selectedRow = upcomingTestTable.getSelectedRow();
+                testId_selected = upcomingTestTable.getValueAt(selectedRow, 0).toString();
+                have_PanelButton=1;
+                System.out.println("Test ID (Upcoming): " + testId_selected);
+            }
+        });
+
+        detailButton.addActionListener(e -> {
+            new UI_TestDetail(mainframe, testId_selected, have_PanelButton).setVisible(true);
+
+        }); // Sửa lỗi
+
+
 
         add(centerPanel, BorderLayout.CENTER);
         add(footerPanel, BorderLayout.SOUTH);
@@ -68,6 +149,7 @@ class UI_ListTest extends JPanel {
 
         JTable table = new JTable(model);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setForeground(Color.BLACK); // Chữ màu đen
         table.setRowHeight(25);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -82,4 +164,5 @@ class UI_ListTest extends JPanel {
 
         return table;
     }
+
 }

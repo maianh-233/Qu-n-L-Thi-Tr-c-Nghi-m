@@ -4,16 +4,20 @@ public class ExamModel {
     private Integer exam_id;
     private Integer test_id;
     private String exam_code;
-    private Float passing_score;  // Đổi tên cho rõ nghĩa hơn
-    private Float total_score;
+    private Integer passing_score;  // Đổi tên cho rõ nghĩa hơn
+    private Integer total_score;
 
     // Constructor đầy đủ
-    public ExamModel(Integer exam_id, Integer test_id, String exam_code, Float passing_score, Float total_score) {
+    public ExamModel(Integer exam_id, Integer test_id, String exam_code, Integer passing_score, Integer total_score) {
         this.exam_id = exam_id;
         this.test_id = test_id;
         this.exam_code = exam_code;
         this.passing_score = passing_score;
         this.total_score = total_score;
+    }
+
+    public ExamModel() {
+
     }
 
     // Getters and Setters
@@ -41,19 +45,19 @@ public class ExamModel {
         this.exam_code = exam_code;
     }
 
-    public Float getPassing_score() {
+    public Integer getPassing_score() {
         return passing_score;
     }
 
-    public void setPassing_score(Float passing_score) {
+    public void setPassing_score(Integer passing_score) {
         this.passing_score = passing_score;
     }
 
-    public Float getTotal_score() {
+    public Integer getTotal_score() {
         return total_score;
     }
 
-    public void setTotal_score(Float total_score) {
+    public void setTotal_score(Integer total_score) {
         this.total_score = total_score;
     }
 }

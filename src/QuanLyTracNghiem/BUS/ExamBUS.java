@@ -20,5 +20,11 @@ public class ExamBUS {
     public boolean insert(ExamModel exam){
         return examdao.insert(exam);
     }
+    public void insertListExamToDB(ArrayList<ExamModel> list){
+        examdao.insertListExamToDB(list);
+    }
+    public int findMaxExamId() {
+        return examdao.findMaxExamId();
+    }
 
 }

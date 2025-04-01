@@ -25,5 +25,8 @@ public class UserChooseBUS {
     public boolean delete(int exam_question_id, String user_id){
         return userchoosedao.delete(exam_question_id,user_id);
     }
+    public boolean insertBatch(ArrayList<UserChooseModel> userChoices){
+        return userchoosedao.insertBatch(userChoices);
+    }
 
 }

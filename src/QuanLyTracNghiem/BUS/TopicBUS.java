@@ -12,7 +12,7 @@ import QuanLyTracNghiem.DTO.TopicModel;
 public class TopicBUS {
     private TopicDAO topicdao=new TopicDAO();
 
-    public List<TopicModel> selectAll(){
+    public ArrayList<TopicModel> selectAll(){
         return topicdao.selectAll();
     }
 

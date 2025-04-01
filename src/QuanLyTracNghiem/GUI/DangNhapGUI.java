@@ -156,11 +156,11 @@ public class DangNhapGUI extends JFrame{
                             JOptionPane.INFORMATION_MESSAGE);
                             if (user.getIsAdmin()==1){
                                 dispose();
-                                UIMainRoleAdmin ui=new UIMainRoleAdmin();
+                                UIMainRoleAdmin ui=new UIMainRoleAdmin(user);
                                 ui.showUI();
                             }else {
                                 dispose();
-                                UIMainRoleThiSinh ui=new UIMainRoleThiSinh();
+                                UIMainRoleThiSinh ui=new UIMainRoleThiSinh(user);
                                 ui.showUI();
                             }
 

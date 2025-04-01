@@ -11,6 +11,10 @@ public class ExamQuestionModel {
         this.exam_question_id = exam_question_id;
         this.question_id = question_id;
     }
+    public ExamQuestionModel(Integer exam_id,  Integer question_id) {
+        this.exam_id = exam_id;
+        this.question_id = question_id;
+    }
 
     // Getters and Setters
     public Integer getExam_id() {

@@ -7,29 +7,38 @@ import java.util.Properties;
 
 public class MyConnect {
     public static Connection conn = null;
-    private static String serverName = "localhost"; // Đã sửa chính tả
-    private static String dbName = "quanlytracnghiem";
-    private static String userName = "root";
-    private static String password = "";
+    private static final String SERVER_NAME = "localhost";
+    private static final String DB_NAME = "db_azota";
+    private static final String USER_NAME = "root";
+    private static final String PASSWORD = "";
+    private static final int PORT = 3306;
 
     public MyConnect() {
-        String strConnect = "jdbc:mysql://" + serverName + ":3306/" + dbName; // Kiểm tra lại cổng
+        String strConnect = "jdbc:mysql://" + SERVER_NAME + ":" + PORT + "/" + DB_NAME
+                + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh";
+
+
         Properties pro = new Properties();
-        pro.put("user", userName);
-        pro.put("password", password);
+        pro.put("user", USER_NAME);
+        pro.put("password", PASSWORD);
 
         try {
+            // Đảm bảo driver đã được tải (có thể bỏ nếu dùng phiên bản mới)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Kết nối đến MySQL
             conn = DriverManager.getConnection(strConnect, pro);
             System.out.println("Kết nối đến CSDL thành công");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Không tìm thấy driver MySQL!");
+            e.printStackTrace();
         } catch (SQLException ex) {
-            System.out.println("Kết nối đến CSDL không thành  công");
-            // JOptionPane.showMessageDialog(null, "Không kết nối được tới CSDL!" +
-            // ex.getMessage(), "Lỗi Kết Nối", JOptionPane.ERROR_MESSAGE);
-            // System.exit(0);
+            System.out.println("Kết nối đến CSDL không thành công");
+            ex.printStackTrace();
         }
     }
 
     public static void main(String[] args) {
-        new MyConnect(); // Tạo một đối tượng để kiểm tra kết nối
+        new MyConnect(); // Kiểm tra kết nối
     }
 }
